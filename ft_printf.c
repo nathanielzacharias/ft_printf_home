@@ -43,6 +43,21 @@ static int	validspecifier()
 	return ();
 }
 
+static int	print_char(char c, t_specs *specs)
+{
+	int	i;
+
+	i= 0;
+	if (specs->justifyleft == 1)
+		i += n_putchar(&c);
+	else
+	{
+		i += print_padwidth(specs, 1);
+		i += n_putchar(&c);
+	}
+	return (i);
+}
+
 static void	set_precision(va_list ap, t_specs *specs, const char *s, int i)
 {}
 
@@ -84,6 +99,29 @@ static int	set_specs(const char *s, int i, va_list ap, t_specs *specs)
 	return (i);
 }
 
+static	int	print_menu(const char fs, va_list ap, t_specs *specs)
+{
+	int count
+
+	count = 0;
+	if (fs == '%')
+		count += print_char('%', specs);
+	else if (fs == 'd' || fs == 'i')
+		count += print_num(va_args(ap, int), specs);
+	else if (fs == 'c')
+		count += print_char(va_arg(ap, int), specs);
+	else if (fs == 's')
+		count += print_str(va_arg(ap, const char *), specs);
+	else if (fs == 'x')
+		count += print_hex();
+	else if (fs == 'X')
+		count += print_hex();
+	else if (fs == 'u')
+		count += print_unsigned();
+	else if (fs == 'p')
+		count += print_ptr();	
+	return (count);
+}
 
 int	ft_printf(const char *format, ...)
 {
