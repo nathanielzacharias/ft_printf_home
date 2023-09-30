@@ -47,8 +47,8 @@ static int	print_char(char c, t_specs *specs)
 {
 	int	i;
 
-	i= 0;
-	if (specs->justifyleft == 1)
+	i = 0;
+	if (specs->justifyleft)
 		i += n_putchar(&c);
 	else
 	{
@@ -56,6 +56,115 @@ static int	print_char(char c, t_specs *specs)
 		i += n_putchar(&c);
 	}
 	return (i);
+}
+
+static int	print_num(int n, t_specs *specs)
+{
+	int		count;
+	long	nl;
+	char 	*str;
+
+	nl = n;
+	count = 0;
+	if (nl < 0)
+	{
+		if(!specs->zeroes)
+			specs->width--;
+		nl = -n;
+	}
+	if (!n && !specs->precision)
+	{
+		count += print_padwidth(specs, 0, 0);
+		return (count);
+	}
+	str = ft_itoa(nl);
+	if (!str)
+		return (0);
+	if (specs->zeroes)
+	{
+		if (nl < 0)
+		{
+			count += n_putchar('-');
+			specs->fieldwidth--;
+		}
+		else if (specs->plus)
+			count += n_putchar('+');
+		else if (specs->space)
+		{
+			count += n_putchar(' ');
+			specs->fieldwidth--;
+		}
+	}
+	//	if (specs->justifyleft )
+	//	{
+		if (nl < 0)
+		{
+			if (specs->precision >= 0 || !flags->zeroes)
+				count += n_putchar('-');
+		}
+		else if (!specs->zeroes && specs->plus)
+			count += n_putchar('+');
+		else if (!specs->zeroes && specs->space)
+			count += n_putchar(' ');
+		if (specs->precision >= 0)
+			count += print_padwidth(specs, n_strlen(str) - 1, 1);
+		count += print_str(str);
+	//	}
+	if (specs->precision >= 0 && specs->precision < n_strlen(str))
+		specs->precision = n_strlen(str);
+	if (specs->precision >= 0)
+	{
+		specs->fieldwidth -= specs->precision;
+		if (!specs->fieldwidth && n < 0)
+			specs->fieldwidth -= 1;
+		count += print_padwidth(specs->fieldwidth, 0, 0);
+	}
+	else
+		count += print_padwidth(specs, n_strlen(str), specs->zeroes);
+	free(str);
+	return (count);
+}
+
+static int	print_prefixstr(const char *str, t_specs specs)
+{
+	int 	i;
+	size_t	len;
+
+	i = 0;
+	len = n_strlen(str);
+	if (specs->precision < 0)
+	{
+		while (str[i] && i < len)
+			n_putchar(&str[i]);
+		return (i);
+	}
+	else
+	{
+		i += print_padwidth(specs, len, 0);
+		while (str[i] && i < specs->precision)
+			n_putchar(&str[i]);
+		return (i);
+	}
+}
+
+static int	print_str(const char *str, t_specs *specs)
+{
+	int	count;
+
+	count = 0;
+	if (!str)
+		str = "(null)";
+	if (specs->precision >= 0 && specs->precision > n_strlen(str))
+		specs->precision = n_strlen(str);
+	if (specs->justifyleft)
+		count += print_prefixstr(str, specs);
+	if (specs->precision >= 0)
+		count += print_padwidth(specs, specs->precision, 0);
+	else
+		count += print_padwidth(specs, n_strlen(str), 0);
+	if (!specs->justifyleft)
+		count += print_prefixstr(str, specs);
+	return (count);
 }
 
 static void	set_precision(va_list ap, t_specs *specs, const char *s, int i)
@@ -80,7 +189,7 @@ static int	set_specs(const char *s, int i, va_list ap, t_specs *specs)
 		if (s[i] == '*')
 			set_width(ap, specs);
 		if (s[i] == '0' && !(specs->left) && !(flags->width))
-			flags->zero = 1;
+			flags->zeroes = 1;
 		if (s[i] == '-')
 		{
 			specs->justifyleft = 1;
@@ -143,7 +252,7 @@ int	ft_printf(const char *format, ...)
 		count += print_char(format[i], specs);
 	}
 	while (format[i])
-		count += write(1, &(format[i], 1);
+		count += write(1, &(format[i]), 1);
 	va_end(ap); //is this optional?
 	return (count);
 }
