@@ -27,6 +27,21 @@ static size_t	n_strlen(const char *str)
 	return (i);
 }
 
+static	size_t 	n_hexlen(unsigned long int n)
+{
+	int	len;
+
+	len = 0;
+	if (n == 0)
+		return (1);
+	while (n >= 1)
+	{
+		len++;
+		n /= 16;
+	}
+	return (len);
+}
+
 static int	n_isdigit(char c)
 {
 	return (c >= '0' && c <= '9')
@@ -293,6 +308,45 @@ static	int	print_unsigned(unsigned int n, t_specs *specs)
 		count += print_unsigned_subroutine(str, specs);
 	free(str);
 	return (count);
+}
+
+static void	print_xtoa(unsigned long int n)
+{
+	if (n > 15)
+	{
+		print_xtoa(n / 16);
+		print_xtoa(n % 16);
+	}
+	else if (n < 10)
+		n_putchar(n + '0');
+	else if (n > 9)
+		n_putchar((n - 10) + 'a');
+}
+
+static	int	print_ptr_subroutine(unsigned long int	ptr)
+{
+	int	subcount;
+
+	subcount = write(1, "0x", 2);
+	print_xtoa(ptr);
+	subcount = n_hexlen(ptr);
+	return (subcount);
+}
+
+static	int	print_ptr(unsigned long int ptr, t_specs *specs)
+{
+	int	count;
+
+	count = 0;
+	if (!ptr)
+		return (count);
+	specs->fieldwidth -= 2;
+	if (specs->justifyleft)
+		count += print_ptr_subroutine(ptr);
+	count += print_padwidth(specs->fieldwidth, n_hexlen(ptr), 0);
+	if (!specs->justifyleft)
+		count += print_ptr_subroutine(ptr);
+	return (count);		
 }
 
 static	int	print_menu(const char fs, va_list ap, t_specs *specs)
