@@ -208,6 +208,54 @@ static int	set_specs(const char *s, int i, va_list ap, t_specs *specs)
 	return (i);
 }
 
+static int	print_prefixhex(int uppercase)
+{
+	return ((uppercase && write(1, "0X", 2)) || write(1, "0x", 2));
+}
+
+static	int	print_hex_subroutine(cont char *str, int n, int uppercase, t_specs *specs)
+{
+	int subcount;
+	int	i;
+
+	subcount = 0;
+	if (n && specs->hash && !specs->zeroes)
+		subcount += print_prefixhex(uppercase);
+	if (specs->precision >= 0)
+		subcount += print_padwidth(specs->precision -1, n_strlen(str) - 1, 1);
+	i = -1;
+	while (str[++i])
+		write(1, &str[i], 1);
+	return (subcount + i);
+}
+
+static	int	print_hex(unsigned int n, int uppercase, t_specs *specs)
+{
+	char 	*str;
+	int 	count;
+
+	count = 0;
+	if (specs->precision == 0 && n == 0)
+		return (print_padwidth(specs->fieldwidth, 0, 0));
+	str = ft_xtoa(n, uppercase);
+	if (!str)
+		return (0);
+	if (n && specs->hash && specs->zeroes)
+		count += print_prefixhex(uppercase);
+	if (specs->justifyleft)
+		count +=  print_hex_subroutine(str, n, uppercase, specs);
+	if (specs->precision >= 0 && specs->precision < n_strlen(str))
+		specs->precision = n_strlen(str);
+	if (specs->precision >= 0)
+		count += print_padwidth(specs->fieldwidth - specs->precision, 0, 0);
+	else
+		count += print_padwidth(specs->fieldwidth, n_strlen(str) + specs->hash * 2, specs->zeroes);
+	if (!specs->justifyleft)
+		count += print_hex_subroutine(str, n, uppercase, specs);
+	free(str);
+	return (count);
+}
+
 static	int	print_menu(const char fs, va_list ap, t_specs *specs)
 {
 	int count
@@ -222,13 +270,13 @@ static	int	print_menu(const char fs, va_list ap, t_specs *specs)
 	else if (fs == 's')
 		count += print_str(va_arg(ap, const char *), specs);
 	else if (fs == 'x')
-		count += print_hex();
+		count += print_hex(va_arg(ap, unsigned int), 0, specs);
 	else if (fs == 'X')
-		count += print_hex();
+		count += print_hex(va_arg(ap, unsigned int), 1, specs);
 	else if (fs == 'u')
-		count += print_unsigned();
+		count += print_unsigned(va_arg(ap, unsigned int), specs);
 	else if (fs == 'p')
-		count += print_ptr();	
+		count += print_ptr((unsigned long int)va_arg(args, void *), specs);	
 	return (count);
 }
 
