@@ -208,12 +208,12 @@ static int	set_specs(const char *s, int i, va_list ap, t_specs *specs)
 	return (i);
 }
 
-static int	print_prefixhex(int uppercase)
+static int	print_prefixhex(short uppercase)
 {
 	return ((uppercase && write(1, "0X", 2)) || write(1, "0x", 2));
 }
 
-static	int	print_hex_subroutine(cont char *str, int n, int uppercase, t_specs *specs)
+static	int	print_hex_subroutine(cont char *str, int n, short uppercase, t_specs *specs)
 {
 	int subcount;
 	int	i;
@@ -229,7 +229,7 @@ static	int	print_hex_subroutine(cont char *str, int n, int uppercase, t_specs *s
 	return (subcount + i);
 }
 
-static	int	print_hex(unsigned int n, int uppercase, t_specs *specs)
+static	int	print_hex(unsigned int n, short uppercase, t_specs *specs)
 {
 	char 	*str;
 	int 	count;
@@ -252,6 +252,45 @@ static	int	print_hex(unsigned int n, int uppercase, t_specs *specs)
 		count += print_padwidth(specs->fieldwidth, n_strlen(str) + specs->hash * 2, specs->zeroes);
 	if (!specs->justifyleft)
 		count += print_hex_subroutine(str, n, uppercase, specs);
+	free(str);
+	return (count);
+}
+
+static	int	print_unsigned_subroutine(const char *str, t_specs *specs)
+{
+	int	subcount;
+	int	i;
+
+	subcount = 0;
+	if (specs->precision >= 0)
+		subcount += print_padwidth(specs->precision - 1, n_strlen(str) - 1, 1);
+	i = -1;
+	while (str[++i])
+		write(1, &str[i], 1);
+	return (subcount + i);
+}
+
+static	int	print_unsigned(unsigned int n, t_specs *specs)
+{
+	int count;
+	char *str;
+
+	count = 0;
+	if (!n && !specs->precision)
+		return (print_padwidth(specs->fieldwidth, 0, 0));
+	str = ft_utoa(n);
+	if (!str)
+		return (0);
+	if (specs->justifyleft)
+		count += print_unsigned_subroutine(str, specs);
+	if (specs->precision >= 0 && specs->precision < n_strlen(str))
+		specs->precision = n_strlen(str);
+	if (specs->precision >= 0)
+		count += print_padwidth(specs->fieldwidth - specs->precision, 0, 0);
+	else
+		count += print_padwidth(specs->fieldwidth, n_strlen(str), specs->zeroes);
+	if (!specs->justifyleft)
+		count += print_unsigned_subroutine(str, specs);
 	free(str);
 	return (count);
 }
