@@ -258,7 +258,7 @@ static	int	print_hex(unsigned int n, int uppercase, t_specs *specs)
 
 static	int	print_menu(const char fs, va_list ap, t_specs *specs)
 {
-	int count
+	int count;
 
 	count = 0;
 	if (fs == '%')
