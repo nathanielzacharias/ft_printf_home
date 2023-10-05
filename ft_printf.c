@@ -42,6 +42,21 @@ static	size_t 	n_hexlen(unsigned long int n)
 	return (len);
 }
 
+static	size_t n_numlen(long num)
+{
+	size_t	len;
+	
+	len = 0;
+	if (num == 0)
+		return (1);
+	while (num)
+	{
+		len++;
+		num /= 10;
+	}
+	return (len);
+}
+
 static int	n_isdigit(char c)
 {
 	return (c >= '0' && c <= '9')
@@ -53,9 +68,10 @@ static int	validconversion(char c)
 		c == ' ' || c == '+');
 }
 
-static int	validspecifier()
+static int	validspecifier(char c)
 {
-	return ();
+	return ( c == 'c' || c == 's' || c == 'd' || c == 'i' || c == 'u'
+		|| c == 'x' || c == 'X' || c == 'p' || c == '%');
 }
 
 static int	print_char(char c, t_specs *specs)
@@ -73,6 +89,21 @@ static int	print_char(char c, t_specs *specs)
 	return (i);
 }
 
+static 	int	print_padwidth(int width_to_print, int current_len, int zeroes)
+{
+	int	subcount;
+
+	subcount = 0;
+	while (width_to_print - current_len)
+	{
+		if (zeroes)
+			subcount += n_putchar("0");
+		subcount += n_putchar(" ");
+		width_to_print--;
+	}
+	return (subcount);
+}
+
 static int	print_num(int n, t_specs *specs)
 {
 	int		count;
@@ -83,13 +114,13 @@ static int	print_num(int n, t_specs *specs)
 	count = 0;
 	if (nl < 0)
 	{
+		nl = -n;
 		if(!specs->zeroes)
 			specs->width--;
-		nl = -n;
 	}
 	if (!n && !specs->precision)
 	{
-		count += print_padwidth(specs, 0, 0);
+		count += print_padwidth(specs->fieldwidth, 0, 0);
 		return (count);
 	}
 	str = ft_itoa(nl);
@@ -99,14 +130,14 @@ static int	print_num(int n, t_specs *specs)
 	{
 		if (nl < 0)
 		{
-			count += n_putchar('-');
+			count += n_putchar("-");
 			specs->fieldwidth--;
 		}
 		else if (specs->plus)
-			count += n_putchar('+');
+			count += n_putchar("+");
 		else if (specs->space)
 		{
-			count += n_putchar(' ');
+			count += n_putchar(" ");
 			specs->fieldwidth--;
 		}
 	}
@@ -135,7 +166,7 @@ static int	print_num(int n, t_specs *specs)
 		count += print_padwidth(specs->fieldwidth, 0, 0);
 	}
 	else
-		count += print_padwidth(specs, n_strlen(str), specs->zeroes);
+		count += print_padwidth(specs->fieldwidth, n_strlen(str), specs->zeroes);
 	free(str);
 	return (count);
 }
@@ -155,7 +186,7 @@ static int	print_prefixstr(const char *str, t_specs specs)
 	}
 	else
 	{
-		i += print_padwidth(specs, len, 0);
+		i += print_padwidth(specs->fieldwidth, len, 0);
 		while (str[i] && i < specs->precision)
 			n_putchar(&str[i]);
 		return (i);
@@ -174,9 +205,9 @@ static int	print_str(const char *str, t_specs *specs)
 	if (specs->justifyleft)
 		count += print_prefixstr(str, specs);
 	if (specs->precision >= 0)
-		count += print_padwidth(specs, specs->precision, 0);
+		count += print_padwidth(specs->fieldwidth, specs->precision, 0);
 	else
-		count += print_padwidth(specs, n_strlen(str), 0);
+		count += print_padwidth(specs->fieldwidth, n_strlen(str), 0);
 	if (!specs->justifyleft)
 		count += print_prefixstr(str, specs);
 	return (count);
@@ -264,7 +295,8 @@ static	int	print_hex(unsigned int n, short uppercase, t_specs *specs)
 	if (specs->precision >= 0)
 		count += print_padwidth(specs->fieldwidth - specs->precision, 0, 0);
 	else
-		count += print_padwidth(specs->fieldwidth, n_strlen(str) + specs->hash * 2, specs->zeroes);
+		count += print_padwidth(specs->fieldwidth, 
+			n_strlen(str) + (specs->hash * 2), specs->zeroes);
 	if (!specs->justifyleft)
 		count += print_hex_subroutine(str, n, uppercase, specs);
 	free(str);
@@ -283,6 +315,26 @@ static	int	print_unsigned_subroutine(const char *str, t_specs *specs)
 	while (str[++i])
 		write(1, &str[i], 1);
 	return (subcount + i);
+}
+
+static char	*ft_utoa(unsigned int u)
+{
+	char	*str;
+	size_t	len;
+	int 	i;
+
+	len = n_numlen(u);
+	str = malloc(sizeof(char) * (len + 1));
+	if (!str)
+		return (NULL);
+	i = len;
+	while (--i)
+	{
+		str[i] = u % 10 + '0';
+		u /= 10;
+	}
+	str[0] = num % 10 + '0';
+	return (str);
 }
 
 static	int	print_unsigned(unsigned int n, t_specs *specs)
