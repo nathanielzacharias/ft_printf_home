@@ -12,9 +12,9 @@
 
 #include "ft_printf.h"
 
-static size_t	n_putchar(const char *c)
+static size_t	n_putchar(const char c)
 {
-	return(write(1, c, 1));
+	return(write(1, &c, 1));
 }
 
 static size_t	n_strlen(const char *str)
@@ -59,7 +59,7 @@ static	size_t n_numlen(long num)
 
 static int	n_isdigit(char c)
 {
-	return (c >= '0' && c <= '9')
+	return (c >= '0' && c <= '9');
 }
 
 static int	validconversion(char c)
@@ -82,8 +82,8 @@ static 	int	print_padwidth(int width_to_print, int current_len, int zeroes)
 	while (width_to_print - current_len)
 	{
 		if (zeroes)
-			subcount += n_putchar("0");
-		subcount += n_putchar(" ");
+			subcount += n_putchar('0');
+		subcount += n_putchar(' ');
 		width_to_print--;
 	}
 	return (subcount);
@@ -95,83 +95,18 @@ static int	print_char(char c, t_specs *specs)
 
 	i = 0;
 	if (specs->justifyleft)
-		i += n_putchar(&c);
+		i += n_putchar(c);
 	else
 	{
 		i += print_padwidth(specs->fieldwidth, 1, specs->zeroes);
-		i += n_putchar(&c);
+		i += n_putchar(c);
 	}
 	return (i);
 }
 
-static int	print_num(int n, t_specs *specs)
-{
-	int		count;
-	long	nl;
-	char 	*str;
 
-	nl = n;
-	count = 0;
-	if (nl < 0)
-	{
-		nl = -n;
-		if(!specs->zeroes)
-			specs->width--;
-	}
-	if (!n && !specs->precision)
-	{
-		count += print_padwidth(specs->fieldwidth, 0, 0);
-		return (count);
-	}
-	str = ft_itoa(nl);
-	if (!str)
-		return (0);
-	if (specs->zeroes)
-	{
-		if (nl < 0)
-		{
-			count += n_putchar("-");
-			specs->fieldwidth--;
-		}
-		else if (specs->plus)
-			count += n_putchar("+");
-		else if (specs->space)
-		{
-			count += n_putchar(" ");
-			specs->fieldwidth--;
-		}
-	}
-	//	if (specs->justifyleft )
-	//	{
-		if (nl < 0)
-		{
-			if (specs->precision >= 0 || !flags->zeroes)
-				count += n_putchar('-');
-		}
-		else if (!specs->zeroes && specs->plus)
-			count += n_putchar('+');
-		else if (!specs->zeroes && specs->space)
-			count += n_putchar(' ');
-		if (specs->precision >= 0)
-			count += print_padwidth(specs, n_strlen(str) - 1, 1);
-		count += print_str(str);
-	//	}
-	if (specs->precision >= 0 && specs->precision < n_strlen(str))
-		specs->precision = n_strlen(str);
-	if (specs->precision >= 0)
-	{
-		specs->fieldwidth -= specs->precision;
-		if (!specs->fieldwidth && n < 0)
-			specs->fieldwidth -= 1;
-		count += print_padwidth(specs->fieldwidth, 0, 0);
-	}
-	else
-		count += print_padwidth(specs->fieldwidth, n_strlen(str), specs->zeroes);
-	free(str);
-	return (count);
-}
 
-static int	print_prefixstr(const char *str, t_specs specs)
+static int	print_prefixstr(const char *str, t_specs *specs)
 {
 	int 	i;
 	size_t	len;
@@ -181,14 +116,14 @@ static int	print_prefixstr(const char *str, t_specs specs)
 	if (specs->precision < 0)
 	{
 		while (str[i] && i < len)
-			n_putchar(&str[i]);
+			n_putchar(str[i]);
 		return (i);
 	}
 	else
 	{
 		i += print_padwidth(specs->fieldwidth, len, 0);
 		while (str[i] && i < specs->precision)
-			n_putchar(&str[i]);
+			n_putchar(str[i]);
 		return (i);
 	}
 }
@@ -213,11 +148,97 @@ static int	print_str(const char *str, t_specs *specs)
 	return (count);
 }
 
+static int	print_num(int n, t_specs *specs)
+{
+	int		count;
+	long	nl;
+	char 	*str;
+
+	nl = n;
+	count = 0;
+	if (nl < 0)
+	{
+		nl = -n;
+		if(!specs->zeroes)
+			specs->fieldwidth--;
+	}
+	if (!n && !specs->precision)
+	{
+		count += print_padwidth(specs->fieldwidth, 0, 0);
+		return (count);
+	}
+	str = ft_itoa(nl);
+	if (!str)
+		return (0);
+	if (specs->zeroes)
+	{
+		if (nl < 0)
+		{
+			count += n_putchar('-');
+			specs->fieldwidth--;
+		}
+		else if (specs->plus)
+			count += n_putchar('+');
+		else if (specs->space)
+		{
+			count += n_putchar(' ');
+			specs->fieldwidth--;
+		}
+	}
+	//	if (specs->justifyleft )
+	//	{
+		if (nl < 0)
+		{
+			if (specs->precision >= 0 || !specs->zeroes)
+				count += n_putchar('-');
+		}
+		else if (!specs->zeroes && specs->plus)
+			count += n_putchar('+');
+		else if (!specs->zeroes && specs->space)
+			count += n_putchar(' ');
+		if (specs->precision >= 0)
+			count += print_padwidth(specs->fieldwidth, n_strlen(str) - 1, 1);
+		count += print_str(str, specs);
+	//	}
+	if (specs->precision >= 0 && specs->precision < n_strlen(str))
+		specs->precision = n_strlen(str);
+	if (specs->precision >= 0)
+	{
+		specs->fieldwidth -= specs->precision;
+		if (!specs->fieldwidth && n < 0)
+			specs->fieldwidth -= 1;
+		count += print_padwidth(specs->fieldwidth, 0, 0);
+	}
+	else
+		count += print_padwidth(specs->fieldwidth, n_strlen(str), specs->zeroes);
+	free(str);
+	return (count);
+}
 static void	set_precision(va_list ap, t_specs *specs, const char *s, int i)
-{}
+{
+	int	cursor;
+
+	cursor = i + 1;
+	if (s[cursor] == '*')
+		specs->precision = va_arg(ap, int);
+	specs->precision = 0;
+	while (n_isdigit(s[cursor]))
+	{
+		specs->precision = (specs->precision * 10) + (s[cursor] - '0');
+		cursor++;
+	}
+}
 
 static void	set_width(va_list ap, t_specs *specs)
-{}
+{
+	specs->extraparams = 1;
+	specs->fieldwidth = va_arg(ap, int);
+	if (specs->fieldwidth < 0)
+	{
+		specs->fieldwidth = (-1) * (specs->fieldwidth);
+		specs->justifyleft = 1;
+	}
+}
 
 static int	set_specs(const char *s, int i, va_list ap, t_specs *specs)
 {
@@ -234,8 +255,8 @@ static int	set_specs(const char *s, int i, va_list ap, t_specs *specs)
 			set_precision(ap, specs, s, i);
 		if (s[i] == '*')
 			set_width(ap, specs);
-		if (s[i] == '0' && !(specs->left) && !(flags->width))
-			flags->zeroes = 1;
+		if (s[i] == '0' && !(specs->justifyleft) && !(specs->fieldwidth))
+			specs->zeroes = 1;
 		if (s[i] == '-')
 		{
 			specs->justifyleft = 1;
@@ -244,10 +265,10 @@ static int	set_specs(const char *s, int i, va_list ap, t_specs *specs)
 		if (n_isdigit(s[i]) && specs->extraparams == 1)
 			specs->fieldwidth = 0;
 		else if (n_isdigit(s[i]))
-			specs.fieldwidth = (specs.fieldwidth * 10) + (c - '0');
-		if (validconversion(str[i]))
+			specs->fieldwidth = (specs->fieldwidth * 10) + (s[i] - '0');
+		if (validconversion(s[i]))
 		{
-			specs->specifier = str[i];
+			specs->specifier = s[i];
 			break ;
 		}
 	}
@@ -370,9 +391,9 @@ static void	print_xtoa(unsigned long int n)
 		print_xtoa(n % 16);
 	}
 	else if (n < 10)
-		n_putchar((char *)(n + '0'));
+		n_putchar((n + '0'));
 	else if (n > 9)
-		n_putchar((char *)((n - 10) + 'a'));
+		n_putchar(((n - 10) + 'a'));
 }
 
 static	int	print_ptr_subroutine(unsigned long int	ptr)
@@ -436,6 +457,7 @@ int	ft_printf(const char *format, ...)
 		return (0);
 	i = -1;
 	count = 0;
+	*specs = (t_specs){0, 0, 0, 0, 0, 0, 0, 0, 0};
 	va_start(ap, format);
 	while (format[++i] && format[i] == '%' && format[i + 1])
 	{

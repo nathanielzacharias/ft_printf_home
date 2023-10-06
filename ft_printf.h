@@ -28,7 +28,7 @@ typedef struct s_specs
 	short	hash;
 	short	space;
 	short	plus;
-}		t_specs = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+}		t_specs;
 
 char	*ft_itoa(int n);
 char	*ft_xtoa(unsigned long ul, short uppercase);

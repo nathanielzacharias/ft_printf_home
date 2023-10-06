@@ -22,7 +22,7 @@ static size_t	hexlen (long int nl)
 	while (nl > 0)
 	{
 		len++;
-		num /= 16;
+		nl /= 16;
 	}
 	return (len);
 }
