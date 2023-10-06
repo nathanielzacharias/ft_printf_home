@@ -31,5 +31,6 @@ typedef struct s_specs
 }		t_specs = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 char	*ft_itoa(int n);
+char	*ft_xtoa(unsigned long ul, short uppercase);
 
 #endif

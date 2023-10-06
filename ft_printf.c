@@ -74,21 +74,6 @@ static int	validspecifier(char c)
 		|| c == 'x' || c == 'X' || c == 'p' || c == '%');
 }
 
-static int	print_char(char c, t_specs *specs)
-{
-	int	i;
-
-	i = 0;
-	if (specs->justifyleft)
-		i += n_putchar(&c);
-	else
-	{
-		i += print_padwidth(specs, 1);
-		i += n_putchar(&c);
-	}
-	return (i);
-}
-
 static 	int	print_padwidth(int width_to_print, int current_len, int zeroes)
 {
 	int	subcount;
@@ -102,6 +87,21 @@ static 	int	print_padwidth(int width_to_print, int current_len, int zeroes)
 		width_to_print--;
 	}
 	return (subcount);
+}
+
+static int	print_char(char c, t_specs *specs)
+{
+	int	i;
+
+	i = 0;
+	if (specs->justifyleft)
+		i += n_putchar(&c);
+	else
+	{
+		i += print_padwidth(specs->fieldwidth, 1, specs->zeroes);
+		i += n_putchar(&c);
+	}
+	return (i);
 }
 
 static int	print_num(int n, t_specs *specs)
@@ -259,7 +259,7 @@ static int	print_prefixhex(short uppercase)
 	return ((uppercase && write(1, "0X", 2)) || write(1, "0x", 2));
 }
 
-static	int	print_hex_subroutine(cont char *str, int n, short uppercase, t_specs *specs)
+static	int	nz_print_hex_subroutine(const char *str, int n, short uppercase, t_specs *specs)
 {
 	int subcount;
 	int	i;
@@ -289,7 +289,7 @@ static	int	print_hex(unsigned int n, short uppercase, t_specs *specs)
 	if (n && specs->hash && specs->zeroes)
 		count += print_prefixhex(uppercase);
 	if (specs->justifyleft)
-		count +=  print_hex_subroutine(str, n, uppercase, specs);
+		count += nz_print_hex_subroutine(str, n, uppercase, specs);
 	if (specs->precision >= 0 && specs->precision < n_strlen(str))
 		specs->precision = n_strlen(str);
 	if (specs->precision >= 0)
@@ -298,7 +298,7 @@ static	int	print_hex(unsigned int n, short uppercase, t_specs *specs)
 		count += print_padwidth(specs->fieldwidth, 
 			n_strlen(str) + (specs->hash * 2), specs->zeroes);
 	if (!specs->justifyleft)
-		count += print_hex_subroutine(str, n, uppercase, specs);
+		count += nz_print_hex_subroutine(str, n, uppercase, specs);
 	free(str);
 	return (count);
 }
@@ -333,7 +333,7 @@ static char	*ft_utoa(unsigned int u)
 		str[i] = u % 10 + '0';
 		u /= 10;
 	}
-	str[0] = num % 10 + '0';
+	str[0] = u % 10 + '0';
 	return (str);
 }
 
@@ -370,9 +370,9 @@ static void	print_xtoa(unsigned long int n)
 		print_xtoa(n % 16);
 	}
 	else if (n < 10)
-		n_putchar(n + '0');
+		n_putchar((char *)(n + '0'));
 	else if (n > 9)
-		n_putchar((n - 10) + 'a');
+		n_putchar((char *)((n - 10) + 'a'));
 }
 
 static	int	print_ptr_subroutine(unsigned long int	ptr)
@@ -409,7 +409,7 @@ static	int	print_menu(const char fs, va_list ap, t_specs *specs)
 	if (fs == '%')
 		count += print_char('%', specs);
 	else if (fs == 'd' || fs == 'i')
-		count += print_num(va_args(ap, int), specs);
+		count += print_num(va_arg(ap, int), specs);
 	else if (fs == 'c')
 		count += print_char(va_arg(ap, int), specs);
 	else if (fs == 's')
@@ -421,7 +421,7 @@ static	int	print_menu(const char fs, va_list ap, t_specs *specs)
 	else if (fs == 'u')
 		count += print_unsigned(va_arg(ap, unsigned int), specs);
 	else if (fs == 'p')
-		count += print_ptr((unsigned long int)va_arg(args, void *), specs);	
+		count += print_ptr((unsigned long int)va_arg(ap, void *), specs);	
 	return (count);
 }
 
@@ -451,10 +451,13 @@ int	ft_printf(const char *format, ...)
 }
 
 
-/*
+#include <stdio.h>
+
 int	main(void)
 {
 	char test[] = "where is the love";
 	int	i = -1;
+
+	printf("ori: %s", test);
+	ft_printf("mine: %s", test);
 }
-*/
