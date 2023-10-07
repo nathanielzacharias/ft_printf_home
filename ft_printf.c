@@ -459,15 +459,16 @@ int	ft_printf(const char *format, ...)
 	count = 0;
 	*specs = (t_specs){0, 0, 0, 0, 0, 0, 0, 0, 0};
 	va_start(ap, format);
-	while (format[++i] && format[i] == '%' && format[i + 1])
+	while (format[i] == '%' && format[i+1])
 	{
+		i++;
 		i = set_specs(format, i, ap, specs);
 		if (specs->specifier && validconversion(format[i]))
 			count += print_menu(format[i], ap, specs);
 		count += print_char(format[i], specs);
 	}
-	while (format[i])
-		count += write(1, &(format[i]), 1);
+	while (format[i + 1])
+		count += write(1, &(format[i++]), 1);
 	va_end(ap); //is this optional?
 	return (count);
 }
@@ -480,6 +481,6 @@ int	main(void)
 	char test[] = "where is the love";
 	int	i = -1;
 
-	printf("ori: %s", test);
-	ft_printf("mine: %s", test);
+	printf("ori: %s\n", test);
+	ft_printf("mine: %s\n", test);
 }
