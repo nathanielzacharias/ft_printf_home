@@ -481,6 +481,6 @@ int	main(void)
 	char test[] = "where is the love";
 	int	i = -1;
 
-	printf("ori: %s\n", test);
-	ft_printf("mine: %s\n", test);
+	printf("\nprintf return: %d\n", printf("%s\n", test));
+	printf("\nft_p return: %d\n", ft_printf("%s\n", test));
 }
