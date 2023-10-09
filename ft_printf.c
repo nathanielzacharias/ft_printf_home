@@ -9,7 +9,7 @@
 /*   Updated: 2023/09/25 18:23:25 by nzachari         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
+#include <stdio.h>
 #include "ft_printf.h"
 
 static size_t	n_putchar(const char c)
@@ -455,32 +455,39 @@ int	ft_printf(const char *format, ...)
 
 	if (!(*format) || !format)
 		return (0);
+	va_start(ap, format);
 	i = -1;
 	count = 0;
-	*specs = (t_specs){0, 0, 0, 0, 0, 0, 0, 0, 0};
-	va_start(ap, format);
-	while (format[i] == '%' && format[i+1])
+	// printf("format ++i is: %c", format[++i]);
+	while (format[++i])
 	{
-		i++;
-		i = set_specs(format, i, ap, specs);
-		if (specs->specifier && validconversion(format[i]))
-			count += print_menu(format[i], ap, specs);
-		count += print_char(format[i], specs);
+		printf("format i is: %c\n", format[i]);
+		*specs = (t_specs){0, 0, 0, 0, 0, -1, 0, 0, 0};
+		if (format[i] == '%' && format[i + 1])
+		{
+			i = set_specs(format, i, ap, specs);
+			if (specs->specifier && validconversion(format[i]))
+				count += print_menu(format[i], ap, specs);
+			count += print_char(format[i], specs);
+		}
+		// else if (format[i] != '%')
+		// 	count += write(1, &(format[i]), 1);
 	}
-	while (format[i + 1])
-		count += write(1, &(format[i++]), 1);
+	//no need this // while (format[i])
+	//no need this //	count += write(1, &(format[i]), 1);
 	va_end(ap); //is this optional?
 	return (count);
 }
 
 
-#include <stdio.h>
 
 int	main(void)
 {
 	char test[] = "where is the love";
 	int	i = -1;
 
-	printf("\nprintf return: %d\n", printf("%s\n", test));
-	printf("\nft_p return: %d\n", ft_printf("%s\n", test));
+	printf("printf return: %d\n", printf("printf string: %s\n", test));
+	int resultof_ft_printf = ft_printf("%s\n", test);
+	printf("ft_ntf return: %d\n", resultof_ft_printf);
+	// ft_printf("%s\n", test);
 }
