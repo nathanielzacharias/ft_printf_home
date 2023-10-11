@@ -19,5 +19,9 @@
 
 char	*ft_xtoa(unsigned long ul, short uppercase);
 size_t	ft_strlen(const char *str);
+int		ft_putul(unsigned long n);
+int		ft_print_str(const char *str);
+int		ft_print_num(int n);
+int		ft_print_hex(unsigned long long ull, short uppercase, short is_ptr);
 
 #endif
