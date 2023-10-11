@@ -46,9 +46,16 @@ char	*ft_xtoa(unsigned long long ull, short uppercase)
 		else if (rem >= 10)
 			str[len] = (rem - 10) + 'a';
 		ull = ull / 16;
+		if (len == 0)
+			break ;
 	}
 	i = -1;
-	while (uppercase && str[++i] && str[i] >= 'a' && str[i] <= 'f')
-		str[i] -= 32;
+	while (uppercase && str[++i])
+	{
+		if (str[i] >= 'a' && str[i] <= 'f')
+			str[i] -= 32;
+		else 
+			continue ;
+	}
 	return (str);
 }

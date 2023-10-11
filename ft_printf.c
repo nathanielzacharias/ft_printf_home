@@ -100,7 +100,7 @@ static	int	print_menu(const char fs, va_list *ap)
 	else if (fs == 'd' || fs == 'i')
 		count += ft_print_num(va_arg(*ap, int));
 	else if (fs == 'x')
-		count += ft_print_hex((unsigned long long)va_arg(*ap, unsigned int), 0);
+		count += ft_print_hex(va_arg(*ap, unsigned long long), 0);
 	else if (fs == 'X')
 		count += ft_print_hex((unsigned long long)va_arg(*ap, unsigned int), 1);
 	else if (fs == 'p')
@@ -138,30 +138,33 @@ int	main(void)
 {
 	char test[] = "where is the love";
 
-	printf("printf c is: %c\n", test[2]);
-	ft_printf("ft_printf c is: %c\n", test[2]);
+	// printf("printf default behaviour is this\n");
+	// ft_printf("ft_printf default behaviour is this\n");
 
-	printf("printf s is: %s\n", test);
-	ft_printf("ft_printf s is: %c\n", test);
+	// printf("printf c is: %c\n", test[2]);
+	// ft_printf("ft_printf c is: %c\n", test[2]);
 
-	printf("printf d is: %d\n", 13);
-	ft_printf("ft_printf d is: %d\n", 13);	
+	// printf("printf s is: %s\n", test);
+	// ft_printf("ft_printf s is: %c\n", test);
 
-	printf("printf i is: %i\n", 17);
-	ft_printf("ft_printf i is: %i\n", 17);
+	// printf("printf d is: %d\n", 13);
+	// ft_printf("ft_printf d is: %d\n", 13);	
 
-	printf("printf x is: %X\n", 42);
-	ft_printf("ft_printf x is: %x\n", 42);
+	// printf("printf i is: %i\n", 17);
+	// ft_printf("ft_printf i is: %i\n", 17);
 
-	printf("printf X is: %X\n", 42);
+	// printf("printf x is: %X\n", 42);
+	// ft_printf("ft_printf x is: %x\n", 42);
+
+	// printf("printf X is: %X\n", 42);
 	ft_printf("ft_printf X is: %X\n", 42);
 
-	printf("printf p is: %p\n", test);
-	ft_printf("ft_printf p is: %p\n", test);
+	// printf("printf p is: %p\n", test);
+	// ft_printf("ft_printf p is: %p\n", test);
 
-	printf("printf u is: %lu\n", -2147483648);
-	ft_printf("ft_printf u is: %u\n", -2147483648);
+	// printf("printf u is: %lu\n", -2147483648);
+	// ft_printf("ft_printf u is: %u\n", -2147483648);
 
-	printf("printf percent is: %%\n");
-	ft_printf("ft_printf percent is: %%\n");
+	// printf("printf percent is: %%\n");
+	// ft_printf("ft_printf percent is: %%\n");
 }
