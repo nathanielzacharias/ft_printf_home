@@ -39,7 +39,10 @@ int	ft_print_str(const char *str)
 
 	count = 0;
 	if (!str)
-		count += write(1, "(null)", 1);
+	{
+		write(1, "(null)", 6);
+		return (6);
+	}
 	count += write(1, str, ft_strlen(str));
 	return (count);
 }
@@ -60,12 +63,14 @@ int	ft_print_num(int n)
 	return (count);
 }
 
-int	ft_print_hex(unsigned long long ull, short uppercase, short is_ptr)
+int	ft_print_hex(unsigned long ull, short uppercase, short is_ptr)
 {
 	int		count;
 	char	*str;
+	int		i;
 
 	count = 0;
+	i = 0;
 	if (is_ptr && ull == 0)
 		return (write(1, "(nil)", 5));
 	str = ft_xtoa(ull, uppercase);
@@ -73,10 +78,11 @@ int	ft_print_hex(unsigned long long ull, short uppercase, short is_ptr)
 		return (count);
 	if (is_ptr)
 		count += write(1, "0x", 2);
-	while (*str)
+	while (str[i])
 	{
-		count += write(1, str, 1);
-		str++;
+		count += write(1, &str[i], 1);
+		i++;
 	}
+	free (str);
 	return (count);
 }

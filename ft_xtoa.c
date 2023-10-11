@@ -27,10 +27,11 @@ static size_t	hexlen(unsigned long long ull)
 	return (len);
 }
 
-static void	ft_xtoa_subroutine(size_t len, unsigned long long ull, char *str)
+static void	ft_xtoa_subroutine(int len, unsigned long long ull, char *str)
 {
 	int	rem;
 
+	str[len] = 0;
 	while (--len >= 0)
 	{
 		rem = ull % 16;
@@ -44,11 +45,11 @@ static void	ft_xtoa_subroutine(size_t len, unsigned long long ull, char *str)
 	}
 }
 
-char	*ft_xtoa(unsigned long long ull, short uppercase)
+char	*ft_xtoa(unsigned long ull, short uppercase)
 {
-	char		*str;
-	int			i;
-	size_t		len;
+	char	*str;
+	int		i;
+	int		len;
 
 	len = hexlen(ull);
 	str = (char *)malloc((len + 1) * sizeof(char));
