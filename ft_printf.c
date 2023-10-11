@@ -70,10 +70,6 @@ int	ft_print_hex(unsigned long long ull, short uppercase)
 	str = ft_xtoa(ull, uppercase);
 	if (!str)
 		return (count);
-	if (*str && uppercase)
-		count += write (1, "0X", 2);
-	else if (*str && !uppercase)
-		count += write (1, "0x", 2);
 	while (*str)
 	{
 		count += write(1, str, 1);
@@ -136,14 +132,14 @@ int	main(void)
 {
 	char test[] = "where is the love";
 
-	printf("printf default behaviour is this\n");
-	ft_printf("ft_printf default behaviour is this\n");
+	// printf("printf default behaviour is this\n");
+	// ft_printf("ft_printf default behaviour is this\n");
 
-	printf("printf c is: %c\n", test[2]);
-	ft_printf("ft_printf c is: %c\n", test[2]);
+	// printf("printf c is: %c\n", test[2]);
+	// ft_printf("ft_printf c is: %c\n", test[2]);
 
-	printf("printf s is: %s\n", test);
-	ft_printf("ft_printf s is: %c\n", test);
+	// printf("printf s is: %s\n", test);
+	// ft_printf("ft_printf s is: %s\n", test);
 
 	// printf("printf d is: %d\n", 13);
 	// ft_printf("ft_printf d is: %d\n", 13);	
@@ -165,4 +161,8 @@ int	main(void)
 
 	// printf("printf percent is: %%\n");
 	// ft_printf("ft_printf percent is: %%\n");
+
+	printf("printf combined is: %% %c %s %i %d %p %u %x %X\n", test[0], test, 12, 13, test, -1000, 42, 42);
+	ft_printf("ft_printf combined is: %% %c %s %i %d %p %u %x %X\n", test[0], test, 12, 13, test, -1000, 42, 42);
+
 }
