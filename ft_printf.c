@@ -60,16 +60,20 @@ int	ft_print_num(int n)
 	return (count);
 }
 
-int	ft_print_hex(unsigned long long ull, short uppercase)
+int	ft_print_hex(unsigned long long ull, short uppercase, short is_ptr)
 {
 	int	count;
 	char	*str;
 
 	count = 0;
 
+	if (is_ptr && ull == 0)
+		return (write(1, "(nil)", 5));
 	str = ft_xtoa(ull, uppercase);
 	if (!str)
 		return (count);
+	if (is_ptr)
+		count += write(1, "0x", 2);
 	while (*str)
 	{
 		count += write(1, str, 1);
@@ -94,11 +98,11 @@ static	int	print_menu(const char fs, va_list *ap)
 	else if (fs == 'd' || fs == 'i')
 		count += ft_print_num(va_arg(*ap, int));
 	else if (fs == 'x')
-		count += ft_print_hex(va_arg(*ap, unsigned long long), 0);
+		count += ft_print_hex(va_arg(*ap, unsigned long long), 0, 0);
 	else if (fs == 'X')
-		count += ft_print_hex((unsigned long long)va_arg(*ap, unsigned int), 1);
+		count += ft_print_hex((unsigned long long)va_arg(*ap, unsigned int), 1, 0);
 	else if (fs == 'p')
-		count += ft_print_hex((unsigned long long)va_arg(*ap, void *), 0);
+		count += ft_print_hex((unsigned long long)va_arg(*ap, void *), 0, 1);
 	else if (fs == 'u')
 		count += ft_putul((unsigned long)va_arg(*ap, unsigned int));
 	else if (fs == '%')
@@ -147,7 +151,7 @@ int	main(void)
 	// printf("printf i is: %i\n", 17);
 	// ft_printf("ft_printf i is: %i\n", 17);
 
-	// printf("printf x is: %X\n", 42);
+	// printf("printf x is: %x\n", 42);
 	// ft_printf("ft_printf x is: %x\n", 42);
 
 	// printf("printf X is: %X\n", 42);
@@ -162,7 +166,9 @@ int	main(void)
 	// printf("printf percent is: %%\n");
 	// ft_printf("ft_printf percent is: %%\n");
 
-	printf("printf combined is: %% %c %s %i %d %p %u %x %X\n", test[0], test, 12, 13, test, -1000, 42, 42);
-	ft_printf("ft_printf combined is: %% %c %s %i %d %p %u %x %X\n", test[0], test, 12, 13, test, -1000, 42, 42);
+	// printf("%p\n", NULL);
+
+	// printf("printf combined is: %% %c %s %i %d %p %u %x %X\n", test[0], test, 12, 13, test, -1000, 42, 42);
+	// ft_printf("ft_printf combined is: %% %c %s %i %d %p %u %x %X\n", test[0], test, 12, 13, test, -1000, 42, 42);
 
 }

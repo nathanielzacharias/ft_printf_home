@@ -16,11 +16,7 @@
 # include <unistd.h>
 # include <stdarg.h>
 # include <stdlib.h>
-//# include "libft/libft.h"
 
-
-
-// char	*ft_itoa(int n);
 char	*ft_xtoa(unsigned long ul, short uppercase);
 size_t	ft_strlen(const char *str);
 

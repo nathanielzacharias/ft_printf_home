@@ -12,7 +12,7 @@
 
 #include <stdlib.h>
 
-static size_t	hexlen (unsigned long long ull)
+static size_t	hexlen(unsigned long long ull)
 {
 	size_t	len;
 
@@ -27,17 +27,10 @@ static size_t	hexlen (unsigned long long ull)
 	return (len);
 }
 
-char	*ft_xtoa(unsigned long long ull, short uppercase)
+static void	ft_xtoa_subroutine(size_t len, unsigned long long ull, char *str)
 {
-	char		*str;
-	int			i;
-	int			rem;
-	size_t		len;
+	int	rem;
 
-	len = hexlen(ull);
-	str = (char *)malloc((len + 1) * sizeof(char));
-	if (!str)
-		return (NULL);
 	while (--len >= 0)
 	{
 		rem = ull % 16;
@@ -49,13 +42,24 @@ char	*ft_xtoa(unsigned long long ull, short uppercase)
 		if (len == 0)
 			break ;
 	}
+}
+
+char	*ft_xtoa(unsigned long long ull, short uppercase)
+{
+	char		*str;
+	int			i;
+	size_t		len;
+
+	len = hexlen(ull);
+	str = (char *)malloc((len + 1) * sizeof(char));
+	if (!str)
+		return (NULL);
+	ft_xtoa_subroutine(len, ull, str);
 	i = -1;
 	while (uppercase && str[++i])
 	{
 		if (str[i] >= 'a' && str[i] <= 'f')
 			str[i] -= 32;
-		else 
-			continue ;
 	}
 	return (str);
 }
