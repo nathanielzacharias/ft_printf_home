@@ -1,3 +1,17 @@
+
+typedef struct s_specs
+{
+	short	specifier;
+	short	extraparams;
+	short	justifyleft;
+	short	zeroes;
+	short	fieldwidth;
+	short	precision;
+	short	hash;
+	short	space;
+	short	plus;
+}		t_specs;
+
 static size_t	n_putchar(const char c)
 {
 	return(write(1, &c, 1));

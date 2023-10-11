@@ -12,39 +12,40 @@
 
 #include <stdlib.h>
 
-static size_t	hexlen (long int nl)
+static size_t	hexlen (unsigned long long ull)
 {
 	size_t	len;
 
-	if (nl == 0)
+	if (ull == 0)
 		return (1);
 	len = 0;
-	while (nl > 0)
+	while (ull > 0)
 	{
 		len++;
-		nl /= 16;
+		ull /= 16;
 	}
 	return (len);
 }
 
-char	*ft_xtoa(unsigned long ul, short uppercase)
+char	*ft_xtoa(unsigned long long ull, short uppercase)
 {
 	char		*str;
 	int			i;
 	int			rem;
 	size_t		len;
 
-	len = hexlen(ul);
+	len = hexlen(ull);
 	str = (char *)malloc((len + 1) * sizeof(char));
 	if (!str)
 		return (NULL);
 	while (--len >= 0)
 	{
-		rem = ul % 16;
+		rem = ull % 16;
 		if (rem < 10)
 			str[len] = rem + '0';
-		str[len] = (rem - 10) + 'a';
-		ul = ul / 16;
+		else if (rem >= 10)
+			str[len] = (rem - 10) + 'a';
+		ull = ull / 16;
 	}
 	i = -1;
 	while (uppercase && str[++i] && str[i] >= 'a' && str[i] <= 'f')

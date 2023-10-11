@@ -1,27 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.h                                        :+:      :+:    :+:   */
+/*   ft_strlen.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nzachari <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/27 12:19:27 by nzachari          #+#    #+#             */
-/*   Updated: 2023/10/05 14:56:54 by nzachari         ###   ########.fr       */
+/*   Created: 2023/09/06 11:31:56 by nzachari          #+#    #+#             */
+/*   Updated: 2023/09/06 12:26:45 by nzachari         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_PRINTF_H
-# define FT_PRINTF_H
+// #include "libft.h"
+#include <stddef.h>
 
-# include <unistd.h>
-# include <stdarg.h>
-# include <stdlib.h>
-//# include "libft/libft.h"
+size_t	ft_strlen(const char *str)
+{
+	size_t	len;
 
+	len = 0;
+	while (*str++)
+		++len;
+	return (len);
+}
 
-
-// char	*ft_itoa(int n);
-char	*ft_xtoa(unsigned long ul, short uppercase);
-size_t	ft_strlen(const char *str);
-
-#endif
+/*
+#include <stdio.h>
+int	main(void)
+{
+	char *str = "wjere?";
+	printf("str should be 6 is actually: %i \n", ft_strlen(str));
+}
+*/
