@@ -67,8 +67,6 @@ int	ft_print_hex(unsigned long long ull, short uppercase)
 
 	count = 0;
 
-	printf("I'm in hex before xtoa");
-
 	str = ft_xtoa(ull, uppercase);
 	if (!str)
 		return (count);
@@ -138,14 +136,14 @@ int	main(void)
 {
 	char test[] = "where is the love";
 
-	// printf("printf default behaviour is this\n");
-	// ft_printf("ft_printf default behaviour is this\n");
+	printf("printf default behaviour is this\n");
+	ft_printf("ft_printf default behaviour is this\n");
 
-	// printf("printf c is: %c\n", test[2]);
-	// ft_printf("ft_printf c is: %c\n", test[2]);
+	printf("printf c is: %c\n", test[2]);
+	ft_printf("ft_printf c is: %c\n", test[2]);
 
-	// printf("printf s is: %s\n", test);
-	// ft_printf("ft_printf s is: %c\n", test);
+	printf("printf s is: %s\n", test);
+	ft_printf("ft_printf s is: %c\n", test);
 
 	// printf("printf d is: %d\n", 13);
 	// ft_printf("ft_printf d is: %d\n", 13);	
@@ -157,13 +155,13 @@ int	main(void)
 	// ft_printf("ft_printf x is: %x\n", 42);
 
 	// printf("printf X is: %X\n", 42);
-	ft_printf("ft_printf X is: %X\n", 42);
+	// ft_printf("ft_printf X is: %X\n", 42);
 
 	// printf("printf p is: %p\n", test);
 	// ft_printf("ft_printf p is: %p\n", test);
 
-	// printf("printf u is: %lu\n", -2147483648);
-	// ft_printf("ft_printf u is: %u\n", -2147483648);
+	// printf("printf u is: %u\n", -100);
+	// ft_printf("ft_printf u is: %u\n", -100);
 
 	// printf("printf percent is: %%\n");
 	// ft_printf("ft_printf percent is: %%\n");
